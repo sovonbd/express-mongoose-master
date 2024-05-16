@@ -35,6 +35,7 @@ courseRouter.post("/create-course", (req: Request, res: Response) => {
   });
 });
 
+//
 app.get(
   "/",
   logger,
@@ -53,6 +54,8 @@ app.post("/", (req: Request, res: Response) => {
   res.send("Recevied!");
 });
 
+//
+
 // Route error handling
 app.all("*", (error: any, req: Request, res: Response) => {
   // console.log(error);
@@ -64,7 +67,7 @@ app.all("*", (error: any, req: Request, res: Response) => {
 
 // global error handling
 app.use((error: any, req: Request, res: Response, next: NextFunction) => {
-  console.log(error);
+  // console.log(error);
   res.status(400).json({
     success: false,
     message: "Failed ot get data",
