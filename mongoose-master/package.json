@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "tsnd --respawn src/server.ts",
+    "start:prod": "node ./dist/server.js",
     "build": "tsc",
     "lint": "npx eslint src . ",
     "lint:fix": "npm run lint --fix",
