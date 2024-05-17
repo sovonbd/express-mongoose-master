@@ -10,48 +10,116 @@ import {
 const userNameSchema = new Schema<UserName>({
   firstName: {
     type: String,
-    required: true,
+    required: [true, "First Name is required"],
   },
-  middleName: String,
+  middleName: {
+    type: String,
+  },
   lastName: {
     type: String,
-    required: true,
+    required: [true, "Last Name is required"],
   },
 });
 
 const guardianSchema = new Schema<Guardian>({
-  fatherName: String,
-  fatherOccupation: String,
-  fatherContactNo: String,
-  motherName: String,
-  motherOccupation: String,
-  motherContactNo: String,
+  fatherName: {
+    type: String,
+  },
+  fatherOccupation: {
+    type: String,
+  },
+  fatherContactNo: {
+    type: String,
+  },
+  motherName: {
+    type: String,
+  },
+  motherOccupation: {
+    type: String,
+  },
+  motherContactNo: {
+    type: String,
+  },
 });
 
 const localGuardianSchema = new Schema<LocalGuardian>({
-  name: String,
-  occupation: String,
-  contactNo: String,
-  address: String,
+  name: {
+    type: String,
+  },
+  occupation: {
+    type: String,
+  },
+  contactNo: {
+    type: String,
+  },
+  address: {
+    type: String,
+  },
 });
 
 const studentSchema = new Schema<Student>({
-  id: String,
-  name: userNameSchema,
-  gender: ["male", "female"], // use enum when you have predefined value, like male female declared in interface
-  dateOfBirth: String,
-  email: String,
-  contactNo: String,
-  emergencyContactNo: String,
-  bloogGroup: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
-  presentAddress: String,
-  permanentAddres: String,
-  guardian: guardianSchema,
-  localGuardian: localGuardianSchema,
-  profileImg: String,
-  isActive: ["active", "blocked"],
+  id: {
+    type: String,
+    required: [true, "Student ID is required"],
+    unique: true,
+  },
+  name: {
+    type: userNameSchema,
+    required: [true, "Student name is required"],
+  },
+  gender: {
+    type: String,
+    enum: {
+      values: ["male", "female", "Others"],
+      message: "{VALUE} is not a valid gender",
+    },
+    required: [true, "Gender is required"],
+  },
+  dateOfBirth: {
+    type: String,
+  },
+  email: {
+    type: String,
+    required: [true, "Email is required"],
+    unique: true,
+    message: "{VALUE} is already exists",
+  },
+  contactNo: {
+    type: String,
+  },
+  emergencyContactNo: {
+    type: String,
+  },
+  bloodGroup: {
+    type: String,
+    enum: {
+      values: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
+      message: "{VALUE} is not a valid blood group",
+    },
+    required: [true, "Blood group is required"],
+  },
+  presentAddress: {
+    type: String,
+  },
+  permanentAddress: {
+    type: String,
+  },
+  guardian: {
+    type: guardianSchema,
+    required: [true, "Guardian information is required"],
+  },
+  localGuardian: {
+    type: localGuardianSchema,
+    required: [true, "Local guardian information is required"],
+  },
+  profileImg: {
+    type: String,
+  },
+  isActive: {
+    type: String,
+    default: "active",
+  },
 });
 
-// step -3 create model
-
+// step - 3 create model
 export const StudentModel = model<Student>("Student", studentSchema);
