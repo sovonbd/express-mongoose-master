@@ -4,8 +4,8 @@ import { StudentService } from "./student.service";
 // step - 5: control the result from db and update to route
 const createStudent = async (req: Request, res: Response) => {
   try {
-    const student = req.body;
-    const result = await StudentService.createStudentintoDB(student);
+    const { student: studentData } = req.body;
+    const result = await StudentService.createStudentIntoDB(studentData);
     res.status(200).json({
       success: true,
       mesage: "Student is created successfully",
@@ -16,6 +16,36 @@ const createStudent = async (req: Request, res: Response) => {
   }
 };
 
+const getAllStudents = async (req: Request, res: Response) => {
+  try {
+    const result = await StudentService.getAllStudentsFromDB();
+    res.status(200).json({
+      success: true,
+      mesage: "Students are retrived successfully",
+      data: result,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const getSingleStudent = async (req: Request, res: Response) => {
+  try {
+    const { id: studentId } = req.params;
+    const result = await StudentService.getSingleStudentFromDB(studentId);
+    console.log(result);
+    res.status(200).json({
+      success: true,
+      message: "Student is retrived successfully",
+      data: result,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const StudentControllers = {
   createStudent,
+  getAllStudents,
+  getSingleStudent,
 };

@@ -4,4 +4,8 @@ import { StudentControllers } from "./student.controller";
 // step-6: create the api route and exchange the data
 const router = express.Router();
 
+router.get("/", StudentControllers.getAllStudents);
+router.get("/:id", StudentControllers.getSingleStudent);
 router.post("/create-student", StudentControllers.createStudent);
+
+export const StudentRoutes = router;
