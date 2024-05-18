@@ -24,6 +24,7 @@ const userNameSchema = new Schema<UserName>({
   },
   middleName: {
     type: String,
+    required: false,
   },
   lastName: {
     type: String,
