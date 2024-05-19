@@ -22,17 +22,18 @@ const createStudent = async (req: Request, res: Response) => {
 
     // validation usin zod
     const studentValidation = studentSchema.parse(studentData);
+
     const result = await StudentService.createStudentIntoDB(studentValidation);
     res.status(200).json({
       success: true,
       mesage: "Student is created successfully",
       data: result,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.log(error);
     res.status(400).json({
       success: false,
-      message: "Something is wrong",
+      message: error.message || "Something is wrong",
       data: error,
     });
   }
