@@ -8,6 +8,8 @@ import {
   TUserName,
 } from "./student.interface";
 import validator from "validator";
+import bycrypt from "bcrypt";
+import config from "../../config";
 
 // step 2 - schema
 const userNameSchema = new Schema<TUserName>({
@@ -84,6 +86,11 @@ const studentSchema = new Schema<TStudent, TStudentModel>({
     required: [true, "Student ID is required"],
     unique: true,
   },
+  password: {
+    type: String,
+    required: [true, "Password is required"],
+    maxlength: [20, "Max length is 20 characters"],
+  },
   name: {
     type: userNameSchema,
     required: [true, "Student name is required"],
@@ -140,7 +147,30 @@ const studentSchema = new Schema<TStudent, TStudentModel>({
     type: String,
     default: "active",
   },
+  isDeleted: {
+    type: Boolean,
+    default: false,
+  },
 });
+
+// middleware - pre
+studentSchema.pre("save", async function (next) {
+  const user = this;
+  user.password = await bycrypt.hash(
+    user.password,
+    Number(config.bycrypt_salt_rounds)
+  );
+  next();
+});
+
+// middleware - post
+studentSchema.post("save", async function (doc, next) {
+  doc.password = "";
+  next();
+});
+
+// middleware - query
+studentSchema.pre("find", async function (next) {});
 
 // custom statics methods
 studentSchema.statics.isUserExists = async function (id: string) {

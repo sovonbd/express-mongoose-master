@@ -34,6 +34,7 @@ const localGuardianSchema = z.object({
 
 const studentSchema = z.object({
   id: z.string(),
+  password: z.string().max(20),
   name: userNameSchema.refine((data) => !!data.firstName && !!data.lastName, {
     message: "Student name is required",
   }),
@@ -59,6 +60,7 @@ const studentSchema = z.object({
   ),
   profileImg: z.string().optional(),
   isActive: z.literal("active").default("active"),
+  isDeleted: z.boolean(),
 });
 
 export { studentSchema };
