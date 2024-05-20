@@ -80,77 +80,89 @@ const localGuardianSchema = new Schema<TLocalGuardian>({
 // const studentSchema = new Schema<TStudent, TStudentModel, TStudentMethods>({
 
 // for custom statics methods
-const studentSchema = new Schema<TStudent, TStudentModel>({
-  id: {
-    type: String,
-    required: [true, "Student ID is required"],
-    unique: true,
-  },
-  password: {
-    type: String,
-    required: [true, "Password is required"],
-    maxlength: [20, "Max length is 20 characters"],
-  },
-  name: {
-    type: userNameSchema,
-    required: [true, "Student name is required"],
-  },
-  gender: {
-    type: String,
-    enum: {
-      values: ["male", "female", "Others"],
-      message: "{VALUE} is not a valid gender",
+const studentSchema = new Schema<TStudent, TStudentModel>(
+  {
+    id: {
+      type: String,
+      required: [true, "Student ID is required"],
+      unique: true,
     },
-    required: [true, "Gender is required"],
-  },
-  dateOfBirth: {
-    type: String,
-  },
-  email: {
-    type: String,
-    required: [true, "Email is required"],
-    unique: true,
-    message: "{VALUE} is already exists",
-  },
-  contactNo: {
-    type: String,
-  },
-  emergencyContactNo: {
-    type: String,
-  },
-  bloodGroup: {
-    type: String,
-    enum: {
-      values: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
-      message: "{VALUE} is not a valid blood group",
+    password: {
+      type: String,
+      required: [true, "Password is required"],
+      maxlength: [20, "Max length is 20 characters"],
     },
-    required: [true, "Blood group is required"],
+    name: {
+      type: userNameSchema,
+      required: [true, "Student name is required"],
+    },
+    gender: {
+      type: String,
+      enum: {
+        values: ["male", "female", "Others"],
+        message: "{VALUE} is not a valid gender",
+      },
+      required: [true, "Gender is required"],
+    },
+    dateOfBirth: {
+      type: String,
+    },
+    email: {
+      type: String,
+      required: [true, "Email is required"],
+      unique: true,
+      message: "{VALUE} is already exists",
+    },
+    contactNo: {
+      type: String,
+    },
+    emergencyContactNo: {
+      type: String,
+    },
+    bloodGroup: {
+      type: String,
+      enum: {
+        values: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
+        message: "{VALUE} is not a valid blood group",
+      },
+      required: [true, "Blood group is required"],
+    },
+    presentAddress: {
+      type: String,
+    },
+    permanentAddress: {
+      type: String,
+    },
+    guardian: {
+      type: guardianSchema,
+      required: [true, "Guardian information is required"],
+    },
+    localGuardian: {
+      type: localGuardianSchema,
+      required: [true, "Local guardian information is required"],
+    },
+    profileImg: {
+      type: String,
+    },
+    isActive: {
+      type: String,
+      default: "active",
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
-  presentAddress: {
-    type: String,
-  },
-  permanentAddress: {
-    type: String,
-  },
-  guardian: {
-    type: guardianSchema,
-    required: [true, "Guardian information is required"],
-  },
-  localGuardian: {
-    type: localGuardianSchema,
-    required: [true, "Local guardian information is required"],
-  },
-  profileImg: {
-    type: String,
-  },
-  isActive: {
-    type: String,
-    default: "active",
-  },
-  isDeleted: {
-    type: Boolean,
-    default: false,
-  },
+  {
+    toJSON: {
+      virtuals: true,
+    },
+  }
+);
+
+// virtual
+studentSchema.virtual("fullName").get(function () {
+  return `${this.name.firstName} ${this.name.middleName} ${this.name.lastName}`;
 });
 
 // middleware - pre
@@ -170,7 +182,16 @@ studentSchema.post("save", async function (doc, next) {
 });
 
 // middleware - query
-studentSchema.pre("find", async function (next) {});
+studentSchema.pre("find", async function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+
+// middleware - query
+studentSchema.pre("aggregate", async function (next) {
+  this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
+  next();
+});
 
 // custom statics methods
 studentSchema.statics.isUserExists = async function (id: string) {
